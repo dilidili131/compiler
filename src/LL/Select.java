@@ -61,7 +61,7 @@ public class Select {
                 }
 
             }
-            System.out.println(select);
+//            System.out.println(select);
         }
     }
     private List<String> disassemble(String value){

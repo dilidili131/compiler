@@ -9,7 +9,13 @@ import java.util.HashMap;
  * @time: 2020/6/4  21:33
  */
 public class LL_Pretreatment {
-    public void initExpressionMaps(ArrayList<String> grammer, HashMap<String, ArrayList<String>> expressionMap){
+    private ArrayList<String> grammer;
+    private HashMap<String, ArrayList<String>> expressionMap;
+    public LL_Pretreatment(ArrayList<String> grammer, HashMap<String, ArrayList<String>> expressionMap){
+        this.grammer = grammer;
+        this.expressionMap = expressionMap;
+    }
+    public HashMap<String, ArrayList<String>> initExpressionMaps(){
         expressionMap.clear();
         for (String gra : grammer) {
             String[] nvNtItem = gra.split("->");
@@ -27,6 +33,6 @@ public class LL_Pretreatment {
                 expressionMap.put(charItemStr, expArr);
             }
         }
-
+        return expressionMap;
     }
 }

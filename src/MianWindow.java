@@ -1,12 +1,12 @@
 import LL.*;
+import LR.AnalyseTable;
+import LR.DFA;
+import LR.LRPretraetment;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * @Description:
@@ -16,11 +16,13 @@ import java.util.TreeSet;
 public class MianWindow {
     private JTextArea textArea_input;
     private JTextArea textArea_first;
-    private JTextArea textArea_result;
+    private JTextArea textArea_resultll;
     private JTextArea textArea_follow;
     private JButton button1;
     private JPanel panel1;
     private JTextField textField1;
+    private JTextArea textArea1;
+    private JTextArea textArea_resultlr;
 
     private ArrayList<String> grammer = new ArrayList<String>();                         //输入文法
     private ArrayList<String> nonTerminal = new ArrayList<String>();                     //非终结符
@@ -29,23 +31,34 @@ public class MianWindow {
     private HashMap<String, ArrayList<String>> first = new HashMap<String, ArrayList<String>>();            //first集
     private HashMap<String, ArrayList<String>> follow = new HashMap<String, ArrayList<String>>();           //follow集
     private HashMap<String, ArrayList<String>> select = new HashMap<String, ArrayList<String>>();           //select集合
-    private String[][] analyze_Table;
+    private String[][] analyze_Table;                                               //预测分析表
     private HashMap<String, ArrayList<String>> expressionMap = new HashMap<String, ArrayList<String>>();    //表达式集和
+    private ArrayList<Map<String, String>> prodution = new ArrayList<Map<String, String>>();          //产生式左部右部
+    private ArrayList<Map<String, String>> projects = new ArrayList<Map<String, String>>();           //
+    private ArrayList<Map<String, Object>> DFA = new ArrayList<Map<String, Object>>();
+    private ArrayList<ArrayList<Map<String, Object>>> projectUnions = new ArrayList<ArrayList<Map<String, Object>>>();
+    private ArrayList<Map<String, Object>> analyseTableAction = new ArrayList<Map<String, Object>>();
+    private ArrayList<Map<String, Object>> analyseTableGoto = new ArrayList<Map<String, Object>>();
+    private Map<Object, Object> searchs = new HashMap<Object, Object>();
+    private ArrayList<Map<String, Object>> Go = new ArrayList<Map<String, Object>>();
 
     public MianWindow(){
         button1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Input input = new Input();
-                input.readGrammer(textArea_input,grammer);
-                input.spiltToNonterminal(grammer,nonTerminal);
-                input.spiltToTerminal(grammer,terminal,nonTerminal);
-                start = input.getStart(grammer,nonTerminal);
-
-
-                LL_Pretreatment llPretreatment = new LL_Pretreatment();
-                llPretreatment.initExpressionMaps(grammer,expressionMap);
-
+                Input input = new Input(textArea_input);
+                grammer = input.readGrammer();
+                nonTerminal = input.spiltToNonterminal();
+                terminal = input.spiltToTerminal();
+                start = input.getStart();
+                //LL预处理
+                LL_Pretreatment llPretreatment = new LL_Pretreatment(grammer,expressionMap);
+                expressionMap = llPretreatment.initExpressionMaps();
+                //LR预处理
+                LRPretraetment lrPretraetment = new LRPretraetment(grammer,prodution,projects);
+                prodution = lrPretraetment.initProduction();
+                projects = lrPretraetment.productionChangeToProject();
+                System.out.println(projects.get(0));
 
                 First first_ = new First();
                 first_.getFirst(first,nonTerminal,terminal,expressionMap);
@@ -53,9 +66,19 @@ public class MianWindow {
                 follow_.getFollow(follow,first,nonTerminal,terminal,grammer,expressionMap,start);
                 Select select_ = new Select();
                 select_.getSelect(grammer,first,follow,select,expressionMap);
+
+                DFA dfa = new DFA(projects,prodution,projectUnions,DFA,terminal);
+                dfa.createDFA(null,null);
+                AnalyseTable analyseTable = new AnalyseTable(terminal,nonTerminal,projectUnions,analyseTableAction,analyseTableGoto,DFA,prodution,follow);
+                boolean isll0 = analyseTable.createLR0AnalyseTable();
+                boolean isslr1 = analyseTable.createSLR1AnalyseTable();
+                System.out.println("isll0:"+isll0);
+                System.out.println("isslr1:"+isslr1);
+
+
                 IsLL1 isLL1 = new IsLL1();
                 if(isLL1.isLL1(select)){
-                    textField1.setText("此文法为LL1文法");
+                    textField1.setText("This is an LL1 grammar");
                     AnalyzeTable analyzeTable = new AnalyzeTable();
                     analyze_Table = analyzeTable.getAnalyzeTable(terminal,nonTerminal,select);
                     String words = "";
@@ -65,7 +88,7 @@ public class MianWindow {
                         }
                         words = words + "\n";
                     }
-                    textArea_result.setText(words);
+                    textArea_resultll.setText(words);
                 }
 
                 //输出First集
@@ -84,6 +107,9 @@ public class MianWindow {
                 for(String gra: grammer){
                     System.out.println("Select("+gra+")="+select.get(gra));
                 }
+
+
+
             }
 
         });

@@ -51,7 +51,7 @@ public class Follow {
                 continue;
             }
             calculate(Vn);
-            System.out.println("当前非终结符为："+Vn+"follow：" +follow.get(Vn));
+//            System.out.println("当前非终结符为："+Vn+"follow：" +follow.get(Vn));
         }
 
         HashMap<String, ArrayList<String>> follow_2 = follow;
