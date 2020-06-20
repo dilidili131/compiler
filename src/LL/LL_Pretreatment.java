@@ -10,10 +10,14 @@ import java.util.HashMap;
  */
 public class LL_Pretreatment {
     private ArrayList<String> grammer;
+    private ArrayList<String> exGrammer;
     private HashMap<String, ArrayList<String>> expressionMap;
-    public LL_Pretreatment(ArrayList<String> grammer, HashMap<String, ArrayList<String>> expressionMap){
+    private String start;
+    public LL_Pretreatment(ArrayList<String> grammer, ArrayList<String> exGrammer,HashMap<String, ArrayList<String>> expressionMap,String start){
         this.grammer = grammer;
+        this.exGrammer = exGrammer;
         this.expressionMap = expressionMap;
+        this.start = start;
     }
     public HashMap<String, ArrayList<String>> initExpressionMaps(){
         expressionMap.clear();
@@ -34,5 +38,20 @@ public class LL_Pretreatment {
             }
         }
         return expressionMap;
+    }
+    public ArrayList<String> ex_Grammer(){
+        exGrammer.clear();
+        if (expressionMap.get(start).size() != 1){
+            String str = start + "'->" +start;
+            exGrammer.add(str);
+            for(String gra : grammer){
+                exGrammer.add(gra);
+            }
+        }else {
+            for(String gra : grammer){
+                exGrammer.add(gra);
+            }
+        }
+        return exGrammer;
     }
 }

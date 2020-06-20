@@ -55,15 +55,13 @@ public class AnalyseTable {
                 for (Map<String, Object> dfa : DFA) {
                     if (dfa.get("begin").equals(begin)
                             && dfa.get("edge").equals(terminal.get(j))) {
-                        ArrayList<Map<String, Object>> end = (ArrayList<Map<String, Object>>) dfa
-                                .get("end");
+                        ArrayList<Map<String, Object>> end = (ArrayList<Map<String, Object>>) dfa.get("end");
                         int endPos = projectUnions.indexOf(end);
 
                         Map<String, Object> newMap = new HashMap<String, Object>();
                         newMap.put("state", i);
                         newMap.put("terminal", terminal.get(j));
-                        ArrayList<String> al = (ArrayList<String>) newMap
-                                .get("value");
+                        ArrayList<String> al = (ArrayList<String>) newMap.get("value");
                         if (al == null)
                             al = new ArrayList<String>();
                         al.add("S" + endPos);
@@ -75,8 +73,7 @@ public class AnalyseTable {
             }
 
             for (Map<String, Object> map : begin) {
-                Map<String, String> pro = (Map<String, String>) map
-                        .get("project");
+                Map<String, String> pro = (Map<String, String>) map.get("project");
                 String right = pro.get("right");
                 String left = pro.get("left");
 
@@ -90,8 +87,7 @@ public class AnalyseTable {
                         Map<String, Object> newMap = new HashMap<String, Object>();
                         newMap.put("state", i);
                         newMap.put("terminal", "#");
-                        ArrayList<String> al = (ArrayList<String>) newMap
-                                .get("value");
+                        ArrayList<String> al = (ArrayList<String>) newMap.get("value");
                         if (al == null)
                             al = new ArrayList<String>();
                         al.add("acc");
@@ -122,8 +118,7 @@ public class AnalyseTable {
                                 newMap.put("terminal", ter);
                                 analyseTableAction.add(newMap);
                             }
-                            ArrayList<String> al = (ArrayList<String>) newMap
-                                    .get("value");
+                            ArrayList<String> al = (ArrayList<String>) newMap.get("value");
                             if (al == null)
                                 al = new ArrayList<String>();
                             al.add("r" + (pos + 1));
@@ -137,8 +132,7 @@ public class AnalyseTable {
                 for (Map<String, Object> dfa : DFA) {
                     if (dfa.get("begin").equals(begin)
                             && dfa.get("edge").equals(nonTerminal.get(j))) {
-                        ArrayList<Map<String, Object>> end = (ArrayList<Map<String, Object>>) dfa
-                                .get("end");
+                        ArrayList<Map<String, Object>> end = (ArrayList<Map<String, Object>>) dfa.get("end");
                         int endPos = projectUnions.indexOf(end);
 
                         Map<String, Object> newMap = new HashMap<String, Object>();
@@ -178,15 +172,13 @@ public class AnalyseTable {
                 for (Map<String, Object> dfa : DFA) {
                     if (dfa.get("begin").equals(begin)
                             && dfa.get("edge").equals(terminal.get(j))) {
-                        ArrayList<Map<String, Object>> end = (ArrayList<Map<String, Object>>) dfa
-                                .get("end");
+                        ArrayList<Map<String, Object>> end = (ArrayList<Map<String, Object>>) dfa.get("end");
                         int endPos = projectUnions.indexOf(end);
 
                         Map<String, Object> newMap = new HashMap<String, Object>();
                         newMap.put("state", i);
                         newMap.put("terminal", terminal.get(j));
-                        ArrayList<String> al = (ArrayList<String>) newMap
-                                .get("value");
+                        ArrayList<String> al = (ArrayList<String>) newMap.get("value");
                         if (al == null)
                             al = new ArrayList<String>();
                         al.add("S" + endPos);
@@ -198,8 +190,7 @@ public class AnalyseTable {
             }
 
             for (Map<String, Object> map : begin) {
-                Map<String, String> pro = (Map<String, String>) map
-                        .get("project");
+                Map<String, String> pro = (Map<String, String>) map.get("project");
                 String right = pro.get("right");
                 String left = pro.get("left");
 
@@ -211,8 +202,7 @@ public class AnalyseTable {
                         Map<String, Object> newMap = new HashMap<String, Object>();
                         newMap.put("state", i);
                         newMap.put("terminal", "#");
-                        ArrayList<String> al = (ArrayList<String>) newMap
-                                .get("value");
+                        ArrayList<String> al = (ArrayList<String>) newMap.get("value");
                         if (al == null)
                             al = new ArrayList<String>();
                         al.add("acc");
@@ -252,8 +242,7 @@ public class AnalyseTable {
                                     newMap.put("terminal", ter);
                                     analyseTableAction.add(newMap);
                                 }
-                                ArrayList<String> al = (ArrayList<String>) newMap
-                                        .get("value");
+                                ArrayList<String> al = (ArrayList<String>) newMap.get("value");
                                 if (al == null)
                                     al = new ArrayList<String>();
                                 al.add("r" + (pos + 1));
@@ -268,8 +257,7 @@ public class AnalyseTable {
                 for (Map<String, Object> dfa : DFA) {
                     if (dfa.get("begin").equals(begin)
                             && dfa.get("edge").equals(nonTerminal.get(j))) {
-                        ArrayList<Map<String, Object>> end = (ArrayList<Map<String, Object>>) dfa
-                                .get("end");
+                        ArrayList<Map<String, Object>> end = (ArrayList<Map<String, Object>>) dfa.get("end");
                         int endPos = projectUnions.indexOf(end);
 
                         Map<String, Object> newMap = new HashMap<String, Object>();
@@ -295,6 +283,85 @@ public class AnalyseTable {
         return isSLR1;
     }
 
+
+    public String printActionTable() {
+        int terminalCount = terminal.size();
+        int stateCount = projectUnions.size();
+        String action = "";
+        action = action + "S\\Vn\t";
+
+        String str = "";
+        for (int i = 0; i < terminalCount; i++)
+            str = str + terminal.get(i)  + "\t";
+        action = action + str + "#\t\n";
+        for (int i = 0; i < stateCount; i++) {
+            action = action + i + "\t";
+            for (int j = 0; j < terminalCount + 1; j++) {
+                String temp;
+                if (j != terminalCount)
+                    temp = terminal.get(j);
+                else
+                    temp = "#";
+
+                int flag = -1;
+                for (Map<String, Object> map : analyseTableAction) {
+                    if (map.get("state").equals(i) && map.get("terminal").equals(temp)) {
+                        ArrayList<String> al = (ArrayList<String>) map.get("value");
+                        for (int k = 0; k < al.size(); k++) {
+                            if (k == 0)
+                                action = action + al.get(k) + "\t";
+                            if (k > 0)
+                                action = action + "," + al.get(k) + "\t";
+                            if (k == al.size() - 1)
+                                action = action + " ";
+                        }
+                        flag = 1;
+                    }
+                }
+
+                if (flag == -1)
+                    action = action + " "+ "\t";
+            }
+            action = action + "\n";
+        }
+        return action;
+
+    }
+    public String printGotoTable(){
+        int nonterminalCount = nonTerminal.size();
+        int stateCount = projectUnions.size();
+        String goto_ = "";
+        goto_ = goto_ + "S\\Vt\t";
+
+        String str = "";
+        for (int i = 1; i < nonterminalCount; i++)
+            str = str + nonTerminal.get(i) + "\t";
+        goto_ = goto_ + str + "\n";
+
+        for (int i = 0; i < stateCount; i++) {
+            goto_ = goto_ + i + "\t";
+            for (int j = 1; j < nonterminalCount; j++) {
+                String temp = nonTerminal.get(j);
+
+                int flag = -1;
+                for (Map<String, Object> map : analyseTableGoto) {
+                    if (map.get("state").equals(i) && map.get("terminal").equals(temp)) {
+                        goto_ = goto_ + map.get("value") + "\t";
+                        flag = 1;
+                    }
+                }
+                if (flag == -1)
+                    goto_ = goto_ + " \t";
+            }
+            goto_ = goto_ + "\n";
+        }
+        return goto_;
+    }
+
+
+    public static void print(String s) {
+        System.out.print(s);
+    }
 
 
 }

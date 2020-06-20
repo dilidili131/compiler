@@ -13,17 +13,21 @@ public class LRPretraetment {
     private ArrayList<String> grammar;
     private ArrayList<Map<String, String>> prodution;
     private ArrayList<Map<String, String>> projects;
+    private String start;
 
     public LRPretraetment(ArrayList<String> grammar,
+                          String start,
                           ArrayList<Map<String, String>> prodution,
                           ArrayList<Map<String, String>> projects){
 
+        this.start = start;
         this.prodution = prodution;
         this.grammar = grammar;
         this.projects = projects;
     }
     //将文法每个产生式拆分为左部和右部的形式保存在Map中
     public ArrayList<Map<String, String>>  initProduction(){
+        prodution.clear();
         for(String gra : grammar){
             String[] temp = gra.split("->");
             Map<String,String> map = new HashMap<String, String>();
@@ -38,13 +42,15 @@ public class LRPretraetment {
     }
     //将产生式转换成项目集合
     public ArrayList<Map<String, String>> productionChangeToProject() {
+        projects.clear();
         for (Map<String, String> map : prodution) {
             String left = map.get("left");
             String right = map.get("right");
 
             for (int i = 0; i < right.length() + 1; i++) {
                 String newString;
-                if (right.equals("$")) {
+                // TODO 待判断
+                if (right.equals("")) {
                     newString = ".";
                     i = 2;
                 } else {
@@ -60,6 +66,7 @@ public class LRPretraetment {
                 projects.add(newMap);
             }
         }
+//        System.out.println("projects:"+projects);
         return projects;
     }
 }

@@ -67,20 +67,24 @@ public class Input {
     //获取开始符号
     public String getStart(){
         start = "";
-        for(String vn : nontermianl){
-            boolean temp = true;
-            for(String gra : grammer){
-                String[] str = gra.split("->");
-                List<String> strlist = disassemble(str[1]);
-                if(strlist.contains(vn)){
-                    temp = false;
+        if(nontermianl.size() == 1){
+            start = nontermianl.get(0);
+        }else {
+            for(String vn : nontermianl){
+                boolean temp = true;
+                for(String gra : grammer){
+                    String[] str = gra.split("->");
+                    List<String> strlist = disassemble(str[1]);
+                    if(strlist.contains(vn)){
+                        temp = false;
+                    }
                 }
-            }
-            if(temp)
-                start = vn;
+                if(temp)
+                    start = vn;
 
+            }
         }
-        return start;
+                return start;
     }
     //将字符串拆分（考虑到可能存在S'）
     private List<String> disassemble(String value){
